@@ -7,13 +7,13 @@ const MAX_FOTO_BYTES = 6 * 1024 * 1024;
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 15 * 1024 * 1024 },
+  limits: { fileSize: 30 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (file.fieldname === "foto" && !file.mimetype.startsWith("image/")) {
       return cb(new Error("A foto precisa ser um arquivo de imagem."));
     }
     if (file.fieldname === "mp3" && !file.mimetype.startsWith("audio/")) {
-      return cb(new Error("O arquivo de música precisa ser um áudio (mp3)."));
+      return cb(new Error("Envie um arquivo de áudio (mp3, wav, m4a, ou o áudio de uma gravação de vídeo)."));
     }
     cb(null, true);
   },

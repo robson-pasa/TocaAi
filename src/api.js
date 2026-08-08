@@ -73,3 +73,13 @@ export function youtubeEmbedUrl(url) {
   id = watch?.[1] || short?.[1] || shorts?.[1] || "";
   return id ? `https://www.youtube.com/embed/${id}` : "";
 }
+
+export function isInstagramUrl(url) {
+  return /instagram\.com\/(?:p|reel|tv)\//i.test(String(url || ""));
+}
+
+export function instagramEmbedUrl(url) {
+  const str = String(url || "");
+  const match = str.match(/instagram\.com\/(p|reel|tv)\/([^/?#]+)/i);
+  return match ? `https://www.instagram.com/${match[1]}/${match[2]}/embed` : "";
+}

@@ -43,7 +43,7 @@ export default function ApplyPage() {
     e.preventDefault();
     setError("");
     if (!mp3) {
-      setError("Envie um arquivo mp3 com uma música do grupo.");
+      setError("Envie um arquivo de áudio com uma música do grupo.");
       return;
     }
     setLoading(true);
@@ -143,14 +143,19 @@ export default function ApplyPage() {
               onChange={(e) => setFoto(e.target.files?.[0] || null)}
             />
           </Field>
-          <Field label="Música em mp3">
+          <Field label="Uma música do grupo (áudio)">
             <input
               required
               type="file"
               accept="audio/*"
+              capture
               className={inputClass}
               onChange={(e) => setMp3(e.target.files?.[0] || null)}
             />
+            <span className="block text-xs text-ink-muted mt-1">
+              Qualquer formato de áudio (mp3, wav, m4a...) — pode ser uma gravação feita na hora, inclusive tirada do
+              áudio de um vídeo.
+            </span>
           </Field>
         </div>
 

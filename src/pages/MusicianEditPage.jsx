@@ -129,13 +129,17 @@ export default function MusicianEditPage({ bandId }) {
               onChange={(e) => setFoto(e.target.files?.[0] || null)}
             />
           </Field>
-          <Field label={`Música mp3 ${form.hasMp3 ? "(trocar)" : "(enviar)"}`}>
+          <Field label={`Áudio ${form.hasMp3 ? "(trocar)" : "(enviar)"}`}>
             <input
               type="file"
               accept="audio/*"
+              capture
               className={inputClass}
               onChange={(e) => setMp3(e.target.files?.[0] || null)}
             />
+            <span className="block text-xs text-ink-muted mt-1">
+              Qualquer formato (mp3, wav, m4a...), inclusive gravado na hora.
+            </span>
           </Field>
         </div>
 
