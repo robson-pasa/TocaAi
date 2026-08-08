@@ -1,9 +1,30 @@
-import { Music, Mic2, Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Music, Mic2, ArrowRight } from "lucide-react";
+import { apiJson } from "../api.js";
 import BannerCarousel from "../components/BannerCarousel.jsx";
+import BandCard from "../components/BandCard.jsx";
+import BottomNav from "../components/BottomNav.jsx";
 
-export default function HomePage({ banners, setPage }) {
+function pickRandom(list, count) {
+  const copy = [...list];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, count);
+}
+
+export default function HomePage({ banners, setPage, onOpenBand, isAuthed, role }) {
+  const [bands, setBands] = useState([]);
+
+  useEffect(() => {
+    apiJson("/bands").then(setBands).catch(() => {});
+  }, []);
+
+  const featured = useMemo(() => pickRandom(bands, 4), [bands]);
+
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-4 py-8 pb-24 sm:pb-8">
       <BannerCarousel banners={banners} />
 
       <div className="text-center py-10">
@@ -21,13 +42,6 @@ export default function HomePage({ banners, setPage }) {
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <button
-            onClick={() => setPage("catalog")}
-            className="inline-flex items-center gap-2 bg-accent text-white font-bold px-6 py-3 rounded-full"
-          >
-            <Search size={18} />
-            Ver catálogo
-          </button>
-          <button
             onClick={() => setPage("apply")}
             className="inline-flex items-center gap-2 border border-accent text-accent-dark font-bold px-6 py-3 rounded-full"
           >
@@ -35,6 +49,28 @@ export default function HomePage({ banners, setPage }) {
           </button>
         </div>
       </div>
+
+      {featured.length > 0 && (
+        <div className="pt-4">
+          <h2 className="text-xl font-bold text-ink mb-4">Grupos em destaque</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+            {featured.map((band) => (
+              <BandCard key={band.id} band={band} onClick={() => onOpenBand(band.id)} />
+            ))}
+          </div>
+          <div className="text-center">
+            <button
+              onClick={() => setPage("catalog")}
+              className="inline-flex items-center gap-2 bg-accent text-white font-bold px-6 py-3 rounded-full"
+            >
+              Ver todos
+              <ArrowRight size={18} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      <BottomNav page="home" setPage={setPage} isAuthed={isAuthed} role={role} />
     </div>
   );
 }

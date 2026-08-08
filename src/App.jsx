@@ -69,7 +69,15 @@ export default function App() {
         <LoginPage onLoggedIn={handleLoggedIn} />
       );
   } else {
-    content = <HomePage banners={banners} setPage={setPage} />;
+    content = (
+      <HomePage
+        banners={banners}
+        setPage={setPage}
+        onOpenBand={openBand}
+        isAuthed={!!auth.role}
+        role={auth.role}
+      />
+    );
   }
 
   return (

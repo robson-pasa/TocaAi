@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Save, CheckCircle2 } from "lucide-react";
 import { apiJson } from "../api.js";
+import AudioUploadField from "../components/AudioUploadField.jsx";
 
 const inputClass =
   "w-full rounded-lg border border-border bg-surface px-3 py-2 text-ink focus:outline-none focus:ring-2 focus:ring-accent";
@@ -120,28 +121,20 @@ export default function MusicianEditPage({ bandId }) {
           />
         </Field>
 
-        <div className="grid sm:grid-cols-2 gap-4">
-          <Field label={`Foto ${form.hasFoto ? "(trocar)" : "(enviar)"}`}>
-            <input
-              type="file"
-              accept="image/*"
-              className={inputClass}
-              onChange={(e) => setFoto(e.target.files?.[0] || null)}
-            />
-          </Field>
-          <Field label={`Áudio ${form.hasMp3 ? "(trocar)" : "(enviar)"}`}>
-            <input
-              type="file"
-              accept="audio/*"
-              capture
-              className={inputClass}
-              onChange={(e) => setMp3(e.target.files?.[0] || null)}
-            />
-            <span className="block text-xs text-ink-muted mt-1">
-              Qualquer formato (mp3, wav, m4a...), inclusive gravado na hora.
-            </span>
-          </Field>
-        </div>
+        <Field label={`Foto ${form.hasFoto ? "(trocar)" : "(enviar)"}`}>
+          <input
+            type="file"
+            accept="image/*"
+            className={inputClass}
+            onChange={(e) => setFoto(e.target.files?.[0] || null)}
+          />
+        </Field>
+
+        <AudioUploadField
+          value={mp3}
+          onChange={setMp3}
+          label={`Áudio ${form.hasMp3 ? "(trocar)" : "(enviar)"}`}
+        />
 
         <Field label="WhatsApp para receber mensagens de contato">
           <input
