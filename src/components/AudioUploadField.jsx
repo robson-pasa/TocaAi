@@ -120,7 +120,6 @@ export default function AudioUploadField({ value, onChange, label = "Uma música
       <input
         ref={fileInputRef}
         type="file"
-        accept="audio/*"
         className="hidden"
         onChange={(e) => handleFilePicked(e.target.files?.[0] || null)}
       />

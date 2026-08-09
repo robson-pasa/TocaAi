@@ -3,7 +3,6 @@ import { Music, Mic2, ArrowRight } from "lucide-react";
 import { apiJson } from "../api.js";
 import BannerCarousel from "../components/BannerCarousel.jsx";
 import BandCard from "../components/BandCard.jsx";
-import BottomNav from "../components/BottomNav.jsx";
 
 function pickRandom(list, count) {
   const copy = [...list];
@@ -14,7 +13,7 @@ function pickRandom(list, count) {
   return copy.slice(0, count);
 }
 
-export default function HomePage({ banners, setPage, onOpenBand, isAuthed, role }) {
+export default function HomePage({ banners, setPage, onOpenBand }) {
   const [bands, setBands] = useState([]);
 
   useEffect(() => {
@@ -24,7 +23,7 @@ export default function HomePage({ banners, setPage, onOpenBand, isAuthed, role 
   const featured = useMemo(() => pickRandom(bands, 4), [bands]);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 pb-24 sm:pb-8">
+    <div className="max-w-6xl mx-auto px-4 py-8">
       <BannerCarousel banners={banners} />
 
       <div className="text-center py-10">
@@ -69,8 +68,6 @@ export default function HomePage({ banners, setPage, onOpenBand, isAuthed, role 
           </div>
         </div>
       )}
-
-      <BottomNav page="home" setPage={setPage} isAuthed={isAuthed} role={role} />
     </div>
   );
 }

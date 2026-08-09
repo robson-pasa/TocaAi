@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { apiJson, getToken, setToken, decodeToken } from "./api.js";
 import Header from "./components/Header.jsx";
+import BottomNav from "./components/BottomNav.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import CatalogPage from "./pages/CatalogPage.jsx";
 import BandDetailPage from "./pages/BandDetailPage.jsx";
@@ -83,7 +84,8 @@ export default function App() {
   return (
     <div className="min-h-screen bg-bg text-ink">
       <Header page={page} setPage={setPage} isAuthed={!!auth.role} role={auth.role} onLogout={handleLogout} />
-      {content}
+      <div className="pb-20 sm:pb-0">{content}</div>
+      <BottomNav page={page} setPage={setPage} isAuthed={!!auth.role} role={auth.role} />
     </div>
   );
 }
