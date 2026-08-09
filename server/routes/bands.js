@@ -5,6 +5,18 @@ import { requireAdmin, requireAdminOrOwnBand, generatePassword, slugify, hashPas
 
 const MAX_FOTO_BYTES = 6 * 1024 * 1024;
 
+const AUDIO_EXTENSIONS = new Set([
+  "mp3", "wav", "m4a", "aac", "ogg", "oga", "opus", "flac", "wma", "amr", "webm", "mp4", "3gp",
+]);
+
+function looksLikeAudio(file) {
+  const mime = file.mimetype || "";
+  if (mime.startsWith("audio/")) return true;
+  if (mime && mime !== "application/octet-stream") return false;
+  const ext = (file.originalname.split(".").pop() || "").toLowerCase();
+  return AUDIO_EXTENSIONS.has(ext);
+}
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 30 * 1024 * 1024 },
@@ -12,7 +24,7 @@ const upload = multer({
     if (file.fieldname === "foto" && !file.mimetype.startsWith("image/")) {
       return cb(new Error("A foto precisa ser um arquivo de imagem."));
     }
-    if (file.fieldname === "mp3" && !file.mimetype.startsWith("audio/")) {
+    if (file.fieldname === "mp3" && !looksLikeAudio(file)) {
       return cb(new Error("Envie um arquivo de áudio (mp3, wav, m4a, ou o áudio de uma gravação de vídeo)."));
     }
     cb(null, true);

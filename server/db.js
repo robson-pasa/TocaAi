@@ -48,6 +48,30 @@ export async function initDb() {
       updated_at BIGINT
     );
   `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cidades (
+      id SERIAL PRIMARY KEY,
+      nome TEXT NOT NULL UNIQUE
+    );
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS estilos_musicais (
+      id SERIAL PRIMARY KEY,
+      nome TEXT NOT NULL UNIQUE
+    );
+  `);
+  await pool.query(`
+    INSERT INTO cidades (nome)
+    SELECT DISTINCT trim(cidade) FROM bands
+    WHERE cidade IS NOT NULL AND trim(cidade) <> ''
+    ON CONFLICT (nome) DO NOTHING;
+  `);
+  await pool.query(`
+    INSERT INTO estilos_musicais (nome)
+    SELECT DISTINCT trim(estilo_musical) FROM bands
+    WHERE estilo_musical IS NOT NULL AND trim(estilo_musical) <> ''
+    ON CONFLICT (nome) DO NOTHING;
+  `);
 }
 
 const PUBLIC_LIST_COLUMNS = `

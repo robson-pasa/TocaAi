@@ -3,6 +3,18 @@ import { UploadCloud, Mic, Square, X, Music2 } from "lucide-react";
 
 const RECORD_MIME_CANDIDATES = ["audio/webm", "audio/mp4", "audio/ogg"];
 
+const AUDIO_EXTENSIONS = new Set([
+  "mp3", "wav", "m4a", "aac", "ogg", "oga", "opus", "flac", "wma", "amr", "webm", "mp4", "3gp",
+]);
+
+function looksLikeAudioFile(file) {
+  const type = file.type || "";
+  if (type.startsWith("audio/")) return true;
+  if (type && type !== "application/octet-stream") return false;
+  const ext = (file.name.split(".").pop() || "").toLowerCase();
+  return AUDIO_EXTENSIONS.has(ext);
+}
+
 function pickRecordMimeType() {
   if (typeof MediaRecorder === "undefined") return "";
   return RECORD_MIME_CANDIDATES.find((t) => MediaRecorder.isTypeSupported(t)) || "";
@@ -21,7 +33,7 @@ function formatTime(sec) {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
-export default function AudioUploadField({ value, onChange, label = "Uma música do grupo (áudio)" }) {
+export default function AudioUploadField({ value, onChange, label = "Uma música do grupo (áudio, opcional)" }) {
   const fileInputRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
@@ -52,7 +64,7 @@ export default function AudioUploadField({ value, onChange, label = "Uma música
 
   function handleFilePicked(file) {
     if (!file) return;
-    if (!file.type.startsWith("audio/")) {
+    if (!looksLikeAudioFile(file)) {
       setError("Selecione um arquivo de áudio.");
       return;
     }

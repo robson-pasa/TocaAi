@@ -6,6 +6,7 @@ import { initDb } from "./db.js";
 import loginRoutes from "./routes/login.js";
 import bandsRoutes from "./routes/bands.js";
 import bannerRoutes from "./routes/banners.js";
+import listasRoutes from "./routes/listas.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use("/api/login", loginRoutes);
 app.use("/api/bands", bandsRoutes);
 app.use("/api/banners", bannerRoutes);
+app.use("/api/listas", listasRoutes);
 
 const distDir = path.join(__dirname, "..", "dist");
 app.use(express.static(distDir));

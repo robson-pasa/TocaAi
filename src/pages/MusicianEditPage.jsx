@@ -22,6 +22,7 @@ export default function MusicianEditPage({ bandId }) {
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+  const [listas, setListas] = useState({ cidades: [], estilos: [] });
 
   useEffect(() => {
     apiJson(`/bands/${bandId}`).then((band) =>
@@ -37,6 +38,12 @@ export default function MusicianEditPage({ bandId }) {
       })
     );
   }, [bandId]);
+
+  useEffect(() => {
+    Promise.all([apiJson("/listas/cidades"), apiJson("/listas/estilos")])
+      .then(([cidades, estilos]) => setListas({ cidades, estilos }))
+      .catch(() => {});
+  }, []);
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -86,20 +93,38 @@ export default function MusicianEditPage({ bandId }) {
 
         <div className="grid sm:grid-cols-2 gap-4">
           <Field label="Estilo musical">
-            <input
+            <select
               required
               className={inputClass}
               value={form.estiloMusical}
               onChange={(e) => update("estiloMusical", e.target.value)}
-            />
+            >
+              <option value="" disabled>
+                Selecione...
+              </option>
+              {listas.estilos.map((o) => (
+                <option key={o.id} value={o.nome}>
+                  {o.nome}
+                </option>
+              ))}
+            </select>
           </Field>
           <Field label="Cidade">
-            <input
+            <select
               required
               className={inputClass}
               value={form.cidade}
               onChange={(e) => update("cidade", e.target.value)}
-            />
+            >
+              <option value="" disabled>
+                Selecione...
+              </option>
+              {listas.cidades.map((o) => (
+                <option key={o.id} value={o.nome}>
+                  {o.nome}
+                </option>
+              ))}
+            </select>
           </Field>
         </div>
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { apiJson } from "../api.js";
 import AudioUploadField from "../components/AudioUploadField.jsx";
@@ -35,6 +35,13 @@ export default function ApplyPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
+  const [listas, setListas] = useState({ cidades: [], estilos: [] });
+
+  useEffect(() => {
+    Promise.all([apiJson("/listas/cidades"), apiJson("/listas/estilos")])
+      .then(([cidades, estilos]) => setListas({ cidades, estilos }))
+      .catch(() => {});
+  }, []);
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -43,16 +50,12 @@ export default function ApplyPage() {
   async function submit(e) {
     e.preventDefault();
     setError("");
-    if (!mp3) {
-      setError("Envie um arquivo de áudio com uma música do grupo.");
-      return;
-    }
     setLoading(true);
     try {
       const formData = new FormData();
       Object.entries(form).forEach(([k, v]) => formData.append(k, v));
       if (foto) formData.append("foto", foto);
-      formData.append("mp3", mp3);
+      if (mp3) formData.append("mp3", mp3);
       await apiJson("/bands/apply", { method: "POST", body: formData });
       setDone(true);
     } catch (err) {
@@ -95,21 +98,38 @@ export default function ApplyPage() {
 
         <div className="grid sm:grid-cols-2 gap-4">
           <Field label="Estilo musical">
-            <input
+            <select
               required
               className={inputClass}
               value={form.estiloMusical}
               onChange={(e) => update("estiloMusical", e.target.value)}
-              placeholder="Ex: Sertanejo, MPB, Rock..."
-            />
+            >
+              <option value="" disabled>
+                Selecione...
+              </option>
+              {listas.estilos.map((o) => (
+                <option key={o.id} value={o.nome}>
+                  {o.nome}
+                </option>
+              ))}
+            </select>
           </Field>
           <Field label="Cidade">
-            <input
+            <select
               required
               className={inputClass}
               value={form.cidade}
               onChange={(e) => update("cidade", e.target.value)}
-            />
+            >
+              <option value="" disabled>
+                Selecione...
+              </option>
+              {listas.cidades.map((o) => (
+                <option key={o.id} value={o.nome}>
+                  {o.nome}
+                </option>
+              ))}
+            </select>
           </Field>
         </div>
 

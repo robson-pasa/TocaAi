@@ -4,11 +4,13 @@ import { apiJson } from "../api.js";
 import StatusBadge from "../components/StatusBadge.jsx";
 import ConfirmDialog from "../components/ConfirmDialog.jsx";
 import AdminBannerManager from "../components/AdminBannerManager.jsx";
+import AdminListsManager from "../components/AdminListsManager.jsx";
 
 const TABS = [
   { key: "pendentes", label: "Pendentes" },
   { key: "todos", label: "Todos os Grupos" },
   { key: "banners", label: "Banners" },
+  { key: "listas", label: "Cidades e Estilos" },
 ];
 
 const inputClass =
@@ -48,7 +50,7 @@ function CredentialsModal({ credentials, onClose }) {
   );
 }
 
-function EditBandModal({ band, onClose, onSaved }) {
+function EditBandModal({ band, cidades, estilos, onClose, onSaved }) {
   const [form, setForm] = useState({
     nomeGrupo: band.nomeGrupo,
     estiloMusical: band.estiloMusical,
@@ -93,10 +95,47 @@ function EditBandModal({ band, onClose, onSaved }) {
       >
         <h3 className="font-bold text-ink text-lg mb-4">Editar {band.nomeGrupo}</h3>
         <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+          {[["nomeGrupo", "Nome do grupo"]].map(([key, label]) => (
+            <label key={key} className="block">
+              <span className="block text-xs font-semibold text-ink-muted mb-1">{label}</span>
+              <input className={inputClass} value={form[key] || ""} onChange={(e) => update(key, e.target.value)} />
+            </label>
+          ))}
+          <label className="block">
+            <span className="block text-xs font-semibold text-ink-muted mb-1">Estilo musical</span>
+            <select
+              className={inputClass}
+              value={form.estiloMusical || ""}
+              onChange={(e) => update("estiloMusical", e.target.value)}
+            >
+              <option value="" disabled>
+                Selecione...
+              </option>
+              {estilos.map((o) => (
+                <option key={o.id} value={o.nome}>
+                  {o.nome}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <span className="block text-xs font-semibold text-ink-muted mb-1">Cidade</span>
+            <select
+              className={inputClass}
+              value={form.cidade || ""}
+              onChange={(e) => update("cidade", e.target.value)}
+            >
+              <option value="" disabled>
+                Selecione...
+              </option>
+              {cidades.map((o) => (
+                <option key={o.id} value={o.nome}>
+                  {o.nome}
+                </option>
+              ))}
+            </select>
+          </label>
           {[
-            ["nomeGrupo", "Nome do grupo"],
-            ["estiloMusical", "Estilo musical"],
-            ["cidade", "Cidade"],
             ["videoUrl", "Link do vídeo"],
             ["responsavelNome", "Responsável"],
             ["cpf", "CPF"],
@@ -142,6 +181,8 @@ export default function AdminPage() {
   const [bands, setBands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [banners, setBanners] = useState([]);
+  const [cidades, setCidades] = useState([]);
+  const [estilos, setEstilos] = useState([]);
   const [credentials, setCredentials] = useState(null);
   const [editingBand, setEditingBand] = useState(null);
   const [confirmAction, setConfirmAction] = useState(null);
@@ -157,6 +198,8 @@ export default function AdminPage() {
   useEffect(() => {
     reloadBands();
     apiJson("/banners").then(setBanners).catch(() => {});
+    apiJson("/listas/cidades").then(setCidades).catch(() => {});
+    apiJson("/listas/estilos").then(setEstilos).catch(() => {});
   }, []);
 
   async function approve(id) {
@@ -207,7 +250,16 @@ export default function AdminPage() {
 
       {tab === "banners" && <AdminBannerManager banners={banners} setBanners={setBanners} />}
 
-      {tab !== "banners" && loading && <p className="text-ink-muted">Carregando...</p>}
+      {tab === "listas" && (
+        <AdminListsManager
+          cidades={cidades}
+          estilos={estilos}
+          onCidadesChange={setCidades}
+          onEstilosChange={setEstilos}
+        />
+      )}
+
+      {tab !== "banners" && tab !== "listas" && loading && <p className="text-ink-muted">Carregando...</p>}
 
       {tab === "pendentes" && !loading && (
         <div className="space-y-3">
@@ -338,6 +390,8 @@ export default function AdminPage() {
       {editingBand && (
         <EditBandModal
           band={editingBand}
+          cidades={cidades}
+          estilos={estilos}
           onClose={() => setEditingBand(null)}
           onSaved={() => {
             setEditingBand(null);
